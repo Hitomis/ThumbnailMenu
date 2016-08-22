@@ -2,6 +2,7 @@ package com.hitomi.tmlibrary;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 /**
@@ -10,7 +11,9 @@ import android.widget.RelativeLayout;
  *
  * Created by hitomi on 2016/8/19.
  */
-public class ThumbnailLayout extends RelativeLayout{
+class ThumbnailLayout extends RelativeLayout{
+
+    private int menuDirction = ThumbnailStyleFactory.MENU_DIRECTION_LEFT;
 
     public ThumbnailLayout(Context context) {
         this(context, null);
@@ -23,5 +26,14 @@ public class ThumbnailLayout extends RelativeLayout{
     public ThumbnailLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
+        initLayout();
     }
+
+    private void initLayout() {
+        ThumbnailStyleFactory factory = new ThumbnailStyleFactory();
+        FrameLayout scrollLayout = factory.createMenuContainer(getContext(), menuDirction);
+        addView(scrollLayout);
+    }
+
+
 }
