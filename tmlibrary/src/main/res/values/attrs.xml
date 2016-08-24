@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ThumbnailMenu -->
+    <declare-styleable name="ThumbnailMenu">
+        <attr name="menu_direction" format="enum">
+            <enum name="left" value="1000" />
+            <enum name="bottom" value="1001" />
+            <enum name="right" value="1002" />
+        </attr>
+    </declare-styleable>
+
+</resources>

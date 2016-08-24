@@ -1,6 +1,7 @@
 package com.hitomi.tmlibrary;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
@@ -13,7 +14,7 @@ import android.widget.RelativeLayout;
  */
 class ThumbnailLayout extends RelativeLayout{
 
-    private int menuDirction = ThumbnailStyleFactory.MENU_DIRECTION_LEFT;
+    private int menuDirection;
 
     public ThumbnailLayout(Context context) {
         this(context, null);
@@ -26,12 +27,16 @@ class ThumbnailLayout extends RelativeLayout{
     public ThumbnailLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ThumbnailMenu);
+        menuDirection = typedArray.getInt(R.styleable.ThumbnailMenu_menu_direction, ThumbnailStyleFactory.MENU_DIRECTION_LEFT);
+        typedArray.recycle();
+
         initLayout();
     }
 
     private void initLayout() {
         ThumbnailStyleFactory factory = new ThumbnailStyleFactory();
-        FrameLayout scrollLayout = factory.createMenuContainer(getContext(), menuDirction);
+        FrameLayout scrollLayout = factory.createMenuContainer(getContext(), menuDirection);
         addView(scrollLayout);
     }
 

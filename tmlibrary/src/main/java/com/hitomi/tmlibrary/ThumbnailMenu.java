@@ -1,6 +1,7 @@
 package com.hitomi.tmlibrary;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.support.v4.view.PagerAdapter;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
@@ -17,11 +18,11 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
  */
 public class ThumbnailMenu extends FrameLayout{
 
-    private int[] ids = {R.id.view0, R.id.view1, R.id.view2, R.id.view3, R.id.view4};
-
     private PagerAdapter mAdapter;
 
-    private List objects = new ArrayList<>();
+    private List objects;
+
+    private int direction = ThumbnailStyleFactory.MENU_DIRECTION_LEFT;
 
     public ThumbnailMenu(Context context) {
         this(context, null);
@@ -34,10 +35,14 @@ public class ThumbnailMenu extends FrameLayout{
     public ThumbnailMenu(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        initLayout(attrs);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ThumbnailMenu);
+        direction = typedArray.getInt(R.styleable.ThumbnailMenu_menu_direction, direction);
+        typedArray.recycle();
+        init(attrs);
     }
 
-    private void initLayout(AttributeSet attrs) {
+    private void init(AttributeSet attrs) {
+        objects = new ArrayList();
         ThumbnailLayout thumbnailLayout = new ThumbnailLayout(getContext(), attrs);
         addView(thumbnailLayout);
 
@@ -62,7 +67,7 @@ public class ThumbnailMenu extends FrameLayout{
         for (int i = 0; i < count; i++) {
             TransitionLayout frameLayout = new TransitionLayout(getContext());
             frameLayout.setTag(i);
-            frameLayout.setId(ids[i]);
+            frameLayout.setId(i);
             frameLayout.setLayoutParams(layoutParams);
             addView(frameLayout);
         }
