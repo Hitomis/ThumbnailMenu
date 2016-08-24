@@ -24,6 +24,8 @@ public class ThumbnailMenu extends FrameLayout{
 
     private int direction = ThumbnailStyleFactory.MENU_DIRECTION_LEFT;
 
+    private List<TransitionLayout> tranLayoutList;
+
     public ThumbnailMenu(Context context) {
         this(context, null);
     }
@@ -43,12 +45,11 @@ public class ThumbnailMenu extends FrameLayout{
 
     private void init(AttributeSet attrs) {
         objects = new ArrayList();
+        tranLayoutList = new ArrayList<>();
+
         ThumbnailLayout thumbnailLayout = new ThumbnailLayout(getContext(), attrs);
         addView(thumbnailLayout);
 
-        if (!isInEditMode()) {
-            setWillNotDraw(true);
-        }
     }
 
     public void setAdapter(PagerAdapter adapter) {
@@ -70,6 +71,7 @@ public class ThumbnailMenu extends FrameLayout{
             frameLayout.setId(i);
             frameLayout.setLayoutParams(layoutParams);
             addView(frameLayout);
+            tranLayoutList.add(frameLayout);
         }
 
         for (int i = 0; i < count; i++) {
