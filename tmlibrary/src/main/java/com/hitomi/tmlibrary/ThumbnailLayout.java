@@ -27,7 +27,7 @@ class ThumbnailLayout extends RelativeLayout{
     public ThumbnailLayout(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
 
-        setBackgroundColor(Color.parseColor("#f8b290"));
+        setBackgroundColor(Color.parseColor("#00d2db"));
     }
 
     public ThumbnailLayout(Context context, AttributeSet attrs, int defStyleAttr) {

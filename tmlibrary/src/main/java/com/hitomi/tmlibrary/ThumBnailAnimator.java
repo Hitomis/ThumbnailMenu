@@ -4,8 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.view.ViewGroup;
+import android.view.animation.Interpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.LinearLayout;
 
 import java.util.List;
@@ -33,8 +34,7 @@ public class ThumbnailAnimator {
         final ThumbnailMenu menu = (ThumbnailMenu) tmLayout.getParent();
         final ViewGroup containner = tmLayout.getContainner();
 
-        int totalLayoutSize = tranLayoutList.size();
-        FastOutLinearInInterpolator fastOutLinearInInterpolator = new FastOutLinearInInterpolator();
+        Interpolator interpolator = new OvershootInterpolator();
 
         final float scaleRatio = .618f;
         float endTranX, endTranY;
@@ -54,9 +54,10 @@ public class ThumbnailAnimator {
             AnimatorSet animSet = new AnimatorSet();
             animSet.setDuration(600);
             animSet.play(scaleXAnima).with(scaleYAnima).with(tranXAnima).with(tranYAnima);
-            animSet.setInterpolator(fastOutLinearInInterpolator);
+            animSet.setInterpolator(interpolator);
             animSet.start();
 
+            final int index = i;
             animSet.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
@@ -66,6 +67,8 @@ public class ThumbnailAnimator {
                             (int)(transitionLayout.getWidth() * scaleRatio),
                             (int)(transitionLayout.getHeight() * scaleRatio)
                     );
+                    if (index != 0)
+                    linlayParams.topMargin = 2;
                     transitionLayout.setScaleX(1.f);
                     transitionLayout.setScaleY(1.f);
                     transitionLayout.setTranslationX(0);

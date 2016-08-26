@@ -51,6 +51,8 @@ public class ThumbnailMenu extends FrameLayout{
         objects = new ArrayList();
         tranLayoutList = new ArrayList<>();
 
+        thumbnailAnimator = new ThumbnailAnimator(direction);
+
         thumbnailLayout = new ThumbnailLayout(getContext(), attrs);
         addView(thumbnailLayout);
     }
@@ -71,7 +73,7 @@ public class ThumbnailMenu extends FrameLayout{
         for (int i = 0; i < count; i++) {
             TransitionLayout frameLayout = new TransitionLayout(getContext());
             frameLayout.setTag(i);
-            frameLayout.setId(i + 1);
+            frameLayout.setId(i + 1);// id 不能为0
             frameLayout.setLayoutParams(layoutParams);
             addView(frameLayout);
             tranLayoutList.add(frameLayout);
@@ -82,8 +84,6 @@ public class ThumbnailMenu extends FrameLayout{
             objects.add(object);
         }
         mAdapter.finishUpdate(this);
-
-        thumbnailAnimator = new ThumbnailAnimator(direction);
     }
 
     public void openMenu() {

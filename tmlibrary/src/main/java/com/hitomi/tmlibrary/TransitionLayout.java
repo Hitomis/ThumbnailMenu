@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 /**
+ * Fragment 实例化的时候需要的容器
  * Created by hitomi on 2016/8/22.
  */
 public class TransitionLayout extends FrameLayout implements View.OnClickListener {
