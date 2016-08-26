@@ -87,6 +87,6 @@ public class ThumbnailMenu extends FrameLayout{
     }
 
     public void openMenu() {
-        thumbnailAnimator.createMenuAnimtor(thumbnailLayout, tranLayoutList);
+        thumbnailAnimator.openMenuAnimtor(thumbnailLayout, tranLayoutList);
     }
 }

@@ -22,7 +22,7 @@ public class ThumbnailAnimator {
         this.direction = direction;
     }
 
-    public void createMenuAnimtor(ThumbnailLayout tmLayout, List<TransitionLayout> tranLayoutList) {
+    public void openMenuAnimtor(ThumbnailLayout tmLayout, List<TransitionLayout> tranLayoutList) {
         switch (direction) {
             case ThumbnailStyleFactory.MENU_DIRECTION_LEFT:
                 makeleftAnimator(tmLayout, tranLayoutList);
@@ -50,7 +50,6 @@ public class ThumbnailAnimator {
                     transitionLayout, "translationX", transitionLayout.getTranslationX(), -endTranX);
             ObjectAnimator tranYAnima = ObjectAnimator.ofFloat(
                     transitionLayout, "translationY", transitionLayout.getTranslationY(), endTranY);
-
             AnimatorSet animSet = new AnimatorSet();
             animSet.setDuration(600);
             animSet.play(scaleXAnima).with(scaleYAnima).with(tranXAnima).with(tranYAnima);
