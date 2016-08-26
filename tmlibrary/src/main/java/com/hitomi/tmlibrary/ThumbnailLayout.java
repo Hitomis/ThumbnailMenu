@@ -2,7 +2,9 @@ package com.hitomi.tmlibrary;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.util.AttributeSet;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
@@ -16,12 +18,16 @@ class ThumbnailLayout extends RelativeLayout{
 
     private int menuDirection;
 
+    private FrameLayout thumbnailContainner;
+
     public ThumbnailLayout(Context context) {
         this(context, null);
     }
 
     public ThumbnailLayout(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
+
+        setBackgroundColor(Color.parseColor("#f8b290"));
     }
 
     public ThumbnailLayout(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -36,9 +42,11 @@ class ThumbnailLayout extends RelativeLayout{
 
     private void initLayout() {
         ThumbnailStyleFactory factory = new ThumbnailStyleFactory();
-        FrameLayout scrollLayout = factory.createMenuContainer(getContext(), menuDirection);
-        addView(scrollLayout);
+        thumbnailContainner = factory.createMenuContainer(getContext(), menuDirection);
+        addView(thumbnailContainner);
     }
 
-
+    public ViewGroup getContainner() {
+        return (ViewGroup) thumbnailContainner.getChildAt(0);
+    }
 }

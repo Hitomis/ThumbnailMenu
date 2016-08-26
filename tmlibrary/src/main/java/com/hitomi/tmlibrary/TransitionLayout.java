@@ -10,6 +10,8 @@ import android.widget.FrameLayout;
  */
 public class TransitionLayout extends FrameLayout implements View.OnClickListener {
 
+    private final View view;
+
     public TransitionLayout(Context context) {
         this(context, null);
     }
@@ -20,6 +22,16 @@ public class TransitionLayout extends FrameLayout implements View.OnClickListene
 
     public TransitionLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
+        view = getChildAt(0);
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        if (indexOfChild(view) != getChildCount() - 1) {
+            bringChildToFront(view);
+        }
+        super.onLayout(changed, left, top, right, bottom);
     }
 
     @Override

@@ -25,7 +25,6 @@ public class Fragment4 extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        System.out.println("create");
         return inflater.inflate(R.layout.frament_4, container, false);
     }
 

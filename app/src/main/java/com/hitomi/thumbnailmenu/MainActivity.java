@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
 
 import com.hitomi.tmlibrary.ThumbnailMenu;
 
@@ -15,7 +16,6 @@ public class MainActivity extends AppCompatActivity {
     private List<Fragment> fragmentList = new ArrayList<>();
 
     private ThumbnailMenu thumbnailMenu;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,5 +47,11 @@ public class MainActivity extends AppCompatActivity {
 
         };
         thumbnailMenu.setAdapter(adapter);
+    }
+
+    @Override
+    public boolean onMenuOpened(int featureId, Menu menu) {
+        thumbnailMenu.openMenu();
+        return super.onMenuOpened(featureId, menu);
     }
 }

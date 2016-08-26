@@ -18,7 +18,11 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
  */
 public class ThumbnailMenu extends FrameLayout{
 
+    private ThumbnailLayout thumbnailLayout;
+
     private PagerAdapter mAdapter;
+
+    private ThumbnailAnimator thumbnailAnimator;
 
     private List objects;
 
@@ -47,16 +51,15 @@ public class ThumbnailMenu extends FrameLayout{
         objects = new ArrayList();
         tranLayoutList = new ArrayList<>();
 
-        ThumbnailLayout thumbnailLayout = new ThumbnailLayout(getContext(), attrs);
+        thumbnailLayout = new ThumbnailLayout(getContext(), attrs);
         addView(thumbnailLayout);
-
     }
 
     public void setAdapter(PagerAdapter adapter) {
         if (mAdapter != null) {
             mAdapter.startUpdate(this);
             for (int i = 0; i < adapter.getCount(); i++) {
-                mAdapter.destroyItem((ViewGroup) getChildAt(i), i, objects.get(i));
+                mAdapter.destroyItem((ViewGroup) getChildAt(i + 1), i, objects.get(i));
             }
             mAdapter.finishUpdate(this);
         }
@@ -68,16 +71,22 @@ public class ThumbnailMenu extends FrameLayout{
         for (int i = 0; i < count; i++) {
             TransitionLayout frameLayout = new TransitionLayout(getContext());
             frameLayout.setTag(i);
-            frameLayout.setId(i);
+            frameLayout.setId(i + 1);
             frameLayout.setLayoutParams(layoutParams);
             addView(frameLayout);
             tranLayoutList.add(frameLayout);
         }
 
         for (int i = 0; i < count; i++) {
-            Object object = mAdapter.instantiateItem((ViewGroup) getChildAt(i), i);
+            Object object = mAdapter.instantiateItem((ViewGroup) getChildAt(i + 1), i);
             objects.add(object);
         }
         mAdapter.finishUpdate(this);
+
+        thumbnailAnimator = new ThumbnailAnimator(direction);
+    }
+
+    public void openMenu() {
+        thumbnailAnimator.createMenuAnimtor(thumbnailLayout, tranLayoutList);
     }
 }
