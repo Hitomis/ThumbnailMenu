@@ -9,7 +9,7 @@ import android.widget.FrameLayout;
  * Fragment 实例化的时候需要的容器
  * Created by hitomi on 2016/8/22.
  */
-public class TransitionLayout extends FrameLayout implements View.OnClickListener {
+public class TransitionLayout extends FrameLayout {
 
     private final View view;
 
@@ -35,8 +35,4 @@ public class TransitionLayout extends FrameLayout implements View.OnClickListene
         super.onLayout(changed, left, top, right, bottom);
     }
 
-    @Override
-    public void onClick(View view) {
-
-    }
 }

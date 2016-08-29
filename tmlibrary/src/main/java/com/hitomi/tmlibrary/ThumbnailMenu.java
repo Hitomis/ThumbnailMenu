@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.v4.view.PagerAdapter;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -24,11 +25,18 @@ public class ThumbnailMenu extends FrameLayout{
 
     private ThumbnailAnimator thumbnailAnimator;
 
+    private ThumbnailMenuChooser thumbnailMenuChooser;
+
     private List objects;
 
-    private int direction = ThumbnailStyleFactory.MENU_DIRECTION_LEFT;
-
     private List<TransitionLayout> tranLayoutList;
+
+    private int direction = ThumbnailFactory.MENU_DIRECTION_LEFT;
+
+    /**
+     * 菜单是否打开
+     */
+    private boolean isOpen;
 
     public ThumbnailMenu(Context context) {
         this(context, null);
@@ -48,12 +56,13 @@ public class ThumbnailMenu extends FrameLayout{
     }
 
     private void init(AttributeSet attrs) {
+        thumbnailMenuChooser = new ThumbnailMenuChooser();
+
+        isOpen = false;
         objects = new ArrayList();
         tranLayoutList = new ArrayList<>();
-
-        thumbnailAnimator = new ThumbnailAnimator(direction);
-
         thumbnailLayout = new ThumbnailLayout(getContext(), attrs);
+        thumbnailAnimator = new ThumbnailAnimator(direction, thumbnailLayout, tranLayoutList);
         addView(thumbnailLayout);
     }
 
@@ -72,11 +81,12 @@ public class ThumbnailMenu extends FrameLayout{
         LayoutParams layoutParams = new LayoutParams(MATCH_PARENT, MATCH_PARENT);
         for (int i = 0; i < count; i++) {
             TransitionLayout frameLayout = new TransitionLayout(getContext());
-            frameLayout.setTag(i);
+//            frameLayout.setTag(i);
             frameLayout.setId(i + 1);// id 不能为0
             frameLayout.setLayoutParams(layoutParams);
+            frameLayout.setOnClickListener(thumbnailMenuChooser);
             addView(frameLayout);
-            tranLayoutList.add(frameLayout);
+            tranLayoutList.add(0, frameLayout); // 倒序添加
         }
 
         for (int i = 0; i < count; i++) {
@@ -86,7 +96,24 @@ public class ThumbnailMenu extends FrameLayout{
         mAdapter.finishUpdate(this);
     }
 
+    private class ThumbnailMenuChooser implements OnClickListener {
+
+        @Override
+        public void onClick(View view) {
+            if (isOpen && view instanceof TransitionLayout) {
+                TransitionLayout choosenLayout = (TransitionLayout) view;
+                closeMenu(choosenLayout);
+            }
+        }
+    }
+
     public void openMenu() {
-        thumbnailAnimator.openMenuAnimtor(thumbnailLayout, tranLayoutList);
+        isOpen = true;
+        thumbnailAnimator.openMenuAnimator();
+    }
+
+    private void closeMenu(TransitionLayout transitionLayout) {
+        isOpen = false;
+        thumbnailAnimator.closeMenuAnimator(transitionLayout);
     }
 }

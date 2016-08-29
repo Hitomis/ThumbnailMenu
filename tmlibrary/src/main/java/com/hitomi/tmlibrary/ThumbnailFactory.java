@@ -12,7 +12,7 @@ import com.hitomi.tmlibrary.util.DensityUtil;
 /**
  * Created by hitomi on 2016/8/19.
  */
-class ThumbnailStyleFactory {
+class ThumbnailFactory {
 
     static final int MENU_DIRECTION_LEFT = 1000;
 
@@ -27,7 +27,7 @@ class ThumbnailStyleFactory {
         int scrollWidth = (int) (DensityUtil.getScreenWidth(context) * .618f);
         int scrollHeight = (int) (DensityUtil.getScreenHeight(context) * (1.0f - .618f));
 
-        LinearLayout containerLayout = new LinearLayout(context);
+        LinearLayout containerLayout = new ThumbnailContainer(context, direction);
         ScrollView.LayoutParams leftLinlayParams = new ScrollView.LayoutParams(
                 ScrollView.LayoutParams.MATCH_PARENT, ScrollView.LayoutParams.MATCH_PARENT);
         containerLayout.setLayoutParams(leftLinlayParams);

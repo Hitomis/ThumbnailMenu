@@ -10,11 +10,11 @@ import android.widget.RelativeLayout;
 
 /**
  *
- * 用于放置缩略图
+ * 用于包裹缩略图菜单容器的容器
  *
  * Created by hitomi on 2016/8/19.
  */
-class ThumbnailLayout extends RelativeLayout{
+ public class ThumbnailLayout extends RelativeLayout{
 
     private int menuDirection;
 
@@ -34,14 +34,14 @@ class ThumbnailLayout extends RelativeLayout{
         super(context, attrs, defStyleAttr);
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ThumbnailMenu);
-        menuDirection = typedArray.getInt(R.styleable.ThumbnailMenu_menu_direction, ThumbnailStyleFactory.MENU_DIRECTION_LEFT);
+        menuDirection = typedArray.getInt(R.styleable.ThumbnailMenu_menu_direction, ThumbnailFactory.MENU_DIRECTION_LEFT);
         typedArray.recycle();
 
         initLayout();
     }
 
     private void initLayout() {
-        ThumbnailStyleFactory factory = new ThumbnailStyleFactory();
+        ThumbnailFactory factory = new ThumbnailFactory();
         thumbnailContainner = factory.createMenuContainer(getContext(), menuDirection);
         addView(thumbnailContainner);
     }
