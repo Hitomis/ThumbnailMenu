@@ -3,6 +3,7 @@ package com.hitomi.tmlibrary;
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 /**
@@ -40,9 +41,9 @@ public class ThumbnailContainer extends LinearLayout {
         int measureHeight = 0;
 
         int childCount = getChildCount();
-        TransitionLayout tranLayout;
+        FrameLayout tranLayout;
         for (int i = 0; i < childCount; i++) {
-            tranLayout = (TransitionLayout) getChildAt(i);
+            tranLayout = (FrameLayout) getChildAt(i);
             measureHeight += tranLayout.getHeight() * tranLayout.getScaleY();
         }
 

@@ -9,12 +9,11 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 /**
- *
  * 用于包裹缩略图菜单容器的容器
- *
+ * <p>
  * Created by hitomi on 2016/8/19.
  */
- public class ThumbnailLayout extends RelativeLayout{
+public class ThumbnailLayout extends RelativeLayout {
 
     private int menuDirection;
 
@@ -46,7 +45,24 @@ import android.widget.RelativeLayout;
         addView(thumbnailContainner);
     }
 
-    public ViewGroup getContainner() {
-        return (ViewGroup) thumbnailContainner.getChildAt(0);
+    public void buildingModels(int modelCount) {
+        ThumbnailContainer containerLayout = getContainner();
+
+        for (int i = 0; i < modelCount; i++) {
+            ThumbnailContainer.LayoutParams containerLayoutParams = new ThumbnailContainer.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, (int) (1230 * ThumbnailMenu.scaleRatio));
+            if (i != 0) containerLayoutParams.topMargin = 2;
+            FrameLayout modelLayout = new FrameLayout(getContext());
+            modelLayout.setTag(i);
+            containerLayout.addView(modelLayout, containerLayoutParams);
+        }
+    }
+
+    public ThumbnailContainer getContainner() {
+        return (ThumbnailContainer) thumbnailContainner.getChildAt(0);
+    }
+
+    public FrameLayout getContainnerParent() {
+        return thumbnailContainner;
     }
 }

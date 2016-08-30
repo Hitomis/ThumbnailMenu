@@ -19,9 +19,11 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
  */
 public class ThumbnailMenu extends FrameLayout{
 
-    private ThumbnailLayout thumbnailLayout;
+    static final float scaleRatio = .618f;
 
     private PagerAdapter mAdapter;
+
+    private ThumbnailLayout thumbnailLayout;
 
     private ThumbnailAnimator thumbnailAnimator;
 
@@ -81,7 +83,6 @@ public class ThumbnailMenu extends FrameLayout{
         LayoutParams layoutParams = new LayoutParams(MATCH_PARENT, MATCH_PARENT);
         for (int i = 0; i < count; i++) {
             TransitionLayout frameLayout = new TransitionLayout(getContext());
-//            frameLayout.setTag(i);
             frameLayout.setId(i + 1);// id 不能为0
             frameLayout.setLayoutParams(layoutParams);
             frameLayout.setOnClickListener(thumbnailMenuChooser);
@@ -94,6 +95,7 @@ public class ThumbnailMenu extends FrameLayout{
             objects.add(object);
         }
         mAdapter.finishUpdate(this);
+        thumbnailLayout.buildingModels(count);
     }
 
     private class ThumbnailMenuChooser implements OnClickListener {
