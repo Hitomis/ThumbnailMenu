@@ -24,8 +24,8 @@ class ThumbnailFactory {
         FrameLayout scrollLayout;
         RelativeLayout.LayoutParams rlayoutParams;
 
-        int scrollWidth = (int) (DensityUtil.getScreenWidth(context) * .618f);
-        int scrollHeight = (int) (DensityUtil.getScreenHeight(context) * (1.0f - .618f));
+        int scrollWidth = (int) (DensityUtil.getScreenWidth(context) * ThumbnailMenu.SCALE_RATIO);
+        int scrollHeight = (int) (DensityUtil.getScreenHeight(context) * (1.0f - ThumbnailMenu.SCALE_RATIO));
 
         LinearLayout containerLayout = new ThumbnailContainer(context, direction);
         ScrollView.LayoutParams leftLinlayParams = new ScrollView.LayoutParams(

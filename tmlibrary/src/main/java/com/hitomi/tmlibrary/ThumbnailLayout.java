@@ -45,17 +45,31 @@ public class ThumbnailLayout extends RelativeLayout {
         addView(thumbnailContainner);
     }
 
-    public void buildingModels(int modelCount) {
-        ThumbnailContainer containerLayout = getContainner();
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
 
-        for (int i = 0; i < modelCount; i++) {
-            ThumbnailContainer.LayoutParams containerLayoutParams = new ThumbnailContainer.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, (int) (1230 * ThumbnailMenu.scaleRatio));
-            if (i != 0) containerLayoutParams.topMargin = 2;
-            FrameLayout modelLayout = new FrameLayout(getContext());
-            modelLayout.setTag(i);
-            containerLayout.addView(modelLayout, containerLayoutParams);
-        }
+    /**
+     * 创建 modelCount 数量的缩略图模型添加到缩略图菜单容器中
+     * @param modelCount
+     */
+    public void buildingModels(final int modelCount) {
+        final ThumbnailContainer containerLayout = getContainner();
+        containerLayout.removeAllViews();
+        postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < modelCount; i++) {
+                    ThumbnailContainer.LayoutParams containerLayoutParams = new ThumbnailContainer.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT, (int) (getHeight() * ThumbnailMenu.SCALE_RATIO));
+                    if (i != 0) containerLayoutParams.topMargin = ThumbnailMenu.THUM_TOP_MARGIN;
+                    FrameLayout modelLayout = new FrameLayout(getContext());
+                    modelLayout.setTag(i);
+                    containerLayout.addView(modelLayout, containerLayoutParams);
+                }
+            }
+        }, 20);
     }
 
     /**

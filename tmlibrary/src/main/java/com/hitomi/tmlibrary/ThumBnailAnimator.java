@@ -62,16 +62,14 @@ public class ThumbnailAnimator {
      * 从左侧打开菜单
      */
     private void openLeftMenu() {
-        // 当前 ScrollView 滚动的距离
-        final int scrollDistance = ((ScrollView) tmLayout.getContainner().getParent()).getScrollY();
         float endTranX, endTranY;
         if (init) {
             for (int i = 0; i < tranLayoutList.size(); i++) {
                 TransitionLayout currTranLayout = tranLayoutList.get(i);
-                float tmpTranY = currTranLayout.getHeight() * (1.f - ThumbnailMenu.scaleRatio) * .5f;
+                float tmpTranY = currTranLayout.getHeight() * (1.f - ThumbnailMenu.SCALE_RATIO) * .5f;
 
-                endTranX = currTranLayout.getWidth() * (1.f - ThumbnailMenu.scaleRatio) * .5f;
-                endTranY = -tmpTranY + (i * currTranLayout.getHeight() * ThumbnailMenu.scaleRatio) - scrollDistance;
+                endTranX = currTranLayout.getWidth() * (1.f - ThumbnailMenu.SCALE_RATIO) * .5f;
+                endTranY = -tmpTranY + (i * currTranLayout.getHeight() * ThumbnailMenu.SCALE_RATIO);
 
                 AnimatorSet animSet = makeOpenMenuAnimatorSet(endTranX, endTranY, currTranLayout);
                 addOpenMenuAnimatorSetListener(animSet, currTranLayout, tmpTranY, i, endTranX);
@@ -80,11 +78,21 @@ public class ThumbnailAnimator {
         } else {
             ThumbnailMenu menu = (ThumbnailMenu) tmLayout.getParent();
             TransitionLayout showingTranLayout = (TransitionLayout) menu.getChildAt(menu.getChildCount() - 1);
-            int menuIndex = tranLayoutList.indexOf(showingTranLayout);
-            float tmpTranY = showingTranLayout.getHeight() * (1.f - ThumbnailMenu.scaleRatio) * .5f;
 
-            endTranX = showingTranLayout.getWidth() * (1.f - ThumbnailMenu.scaleRatio) * .5f;
-            endTranY = -tmpTranY + (menuIndex * showingTranLayout.getHeight() * ThumbnailMenu.scaleRatio) - scrollDistance;
+            float singleThumMenuHeight = showingTranLayout.getHeight() * ThumbnailMenu.SCALE_RATIO;
+            int menuIndex = tranLayoutList.indexOf(showingTranLayout);
+
+            // 调整菜单滚动的位置
+            int adjustScrollLength = (int) (menuIndex * (singleThumMenuHeight + ThumbnailMenu.THUM_TOP_MARGIN));
+            ScrollView scrollView = (ScrollView) tmLayout.getContainner().getParent();
+            scrollView.scrollTo(0, adjustScrollLength);
+
+            // 当前 ScrollView 滚动的距离
+            int scrollDistance = scrollView.getScrollY();
+            float tmpTranY = showingTranLayout.getHeight() * (1.f - ThumbnailMenu.SCALE_RATIO) * .5f;
+
+            endTranX = showingTranLayout.getWidth() * (1.f - ThumbnailMenu.SCALE_RATIO) * .5f;
+            endTranY = -tmpTranY + (menuIndex * singleThumMenuHeight) - scrollDistance;
 
             AnimatorSet animSet = makeOpenMenuAnimatorSet(endTranX, endTranY, showingTranLayout);
             addOpenMenuAnimatorSetListener(animSet, showingTranLayout, tmpTranY, menuIndex, endTranX);
@@ -144,9 +152,9 @@ public class ThumbnailAnimator {
     @NonNull
     private AnimatorSet makeOpenMenuAnimatorSet(float endTranX, float endTranY, TransitionLayout transitionLayout) {
         ObjectAnimator scaleXAnima = ObjectAnimator.ofFloat(
-                transitionLayout, "scaleX", transitionLayout.getScaleX(), ThumbnailMenu.scaleRatio);
+                transitionLayout, "scaleX", transitionLayout.getScaleX(), ThumbnailMenu.SCALE_RATIO);
         ObjectAnimator scaleYAnima = ObjectAnimator.ofFloat(
-                transitionLayout, "scaleY", transitionLayout.getScaleY(), ThumbnailMenu.scaleRatio);
+                transitionLayout, "scaleY", transitionLayout.getScaleY(), ThumbnailMenu.SCALE_RATIO);
 
         ObjectAnimator tranXAnima = ObjectAnimator.ofFloat(
                 transitionLayout, "translationX", transitionLayout.getTranslationX(), -endTranX);
@@ -171,9 +179,9 @@ public class ThumbnailAnimator {
     @NonNull
     private AnimatorSet makeCloseMenuAnimatorSet(TransitionLayout transitionLayout, float endTranX, float endTranY) {
         ObjectAnimator scaleXAnima = ObjectAnimator.ofFloat(
-                transitionLayout, "scaleX", transitionLayout.getScaleX(), transitionLayout.getScaleX() / ThumbnailMenu.scaleRatio);
+                transitionLayout, "scaleX", transitionLayout.getScaleX(), transitionLayout.getScaleX() / ThumbnailMenu.SCALE_RATIO);
         ObjectAnimator scaleYAnima = ObjectAnimator.ofFloat(
-                transitionLayout, "scaleY", transitionLayout.getScaleX(), transitionLayout.getScaleY() / ThumbnailMenu.scaleRatio);
+                transitionLayout, "scaleY", transitionLayout.getScaleX(), transitionLayout.getScaleY() / ThumbnailMenu.SCALE_RATIO);
 
         ObjectAnimator tranXAnima = ObjectAnimator.ofFloat(
                 transitionLayout, "translationX", transitionLayout.getTranslationX(), endTranX);

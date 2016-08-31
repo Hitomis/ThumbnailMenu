@@ -19,7 +19,9 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
  */
 public class ThumbnailMenu extends FrameLayout{
 
-    static final float scaleRatio = .618f;
+    static final float SCALE_RATIO = .618f;
+
+    static final int THUM_TOP_MARGIN = 2;
 
     private PagerAdapter mAdapter;
 
