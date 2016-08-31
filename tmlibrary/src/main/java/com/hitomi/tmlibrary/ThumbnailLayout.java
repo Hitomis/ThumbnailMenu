@@ -58,10 +58,18 @@ public class ThumbnailLayout extends RelativeLayout {
         }
     }
 
+    /**
+     * 获取缩略图菜单容器中的 ScrollView 中唯一 ViewGroup [这里是LinearLayout]
+     * @return
+     */
     public ThumbnailContainer getContainner() {
         return (ThumbnailContainer) thumbnailContainner.getChildAt(0);
     }
 
+    /**
+     * 获取缩略图菜单容器中的ScrollView
+     * @return
+     */
     public FrameLayout getContainnerParent() {
         return thumbnailContainner;
     }

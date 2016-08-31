@@ -4,8 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class ThumbnailAnimator {
 
-    private final Interpolator interpolator = new AccelerateDecelerateInterpolator();
+    private final Interpolator interpolator = new LinearInterpolator();
 
     /**
      * 菜单方向
@@ -59,13 +59,16 @@ public class ThumbnailAnimator {
         final ThumbnailMenu menu = (ThumbnailMenu) tmLayout.getParent();
         final ThumbnailContainer containner = tmLayout.getContainner();
 
+        // 当前 ScrollView 滚动的距离
+        final int scrollDistance = ((ScrollView) containner.getParent()).getScrollY();
+
         float endTranX, endTranY;
         for (int i = 0; i < tranLayoutList.size(); i++) {
             final TransitionLayout transitionLayout = tranLayoutList.get(i);
             final float tmpTranY = transitionLayout.getHeight() * (1.f - ThumbnailMenu.scaleRatio) * .5f;
 
             endTranX = transitionLayout.getWidth() * (1.f - ThumbnailMenu.scaleRatio) * .5f;
-            endTranY = -tmpTranY + (i * transitionLayout.getHeight() * ThumbnailMenu.scaleRatio);
+            endTranY = -tmpTranY + (i * transitionLayout.getHeight() * ThumbnailMenu.scaleRatio) - scrollDistance;
 
             ObjectAnimator scaleXAnima = ObjectAnimator.ofFloat(
                     transitionLayout, "scaleX", transitionLayout.getScaleX(), ThumbnailMenu.scaleRatio);
@@ -78,7 +81,7 @@ public class ThumbnailAnimator {
                     transitionLayout, "translationY", transitionLayout.getTranslationY(), endTranY);
 
             AnimatorSet animSet = new AnimatorSet();
-            animSet.setDuration(600);
+            animSet.setDuration(300);
             animSet.play(scaleXAnima).with(scaleYAnima).with(tranXAnima).with(tranYAnima);
             animSet.setInterpolator(interpolator);
             animSet.start();
@@ -88,7 +91,6 @@ public class ThumbnailAnimator {
             animSet.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-
                     menu.removeViewAt(menu.indexOfChild(transitionLayout));
 
                     // 设置为原来的宽高大小，是因为之前缩小过
@@ -108,22 +110,27 @@ public class ThumbnailAnimator {
 
     private void closeLeftMenu(final TransitionLayout transitionLayout) {
         final ThumbnailMenu menu = (ThumbnailMenu) tmLayout.getParent();
-        final ThumbnailContainer containner = tmLayout.getContainner();
+        final ThumbnailContainer container = tmLayout.getContainner();
 
-        int scrollDistance = ((ScrollView) transitionLayout.getParent().getParent()).getScrollY();
-        int top = transitionLayout.getTop() - scrollDistance;
+        // 当前 ScrollView 滚动的距离
+        final int scrollDistance = ((ScrollView) transitionLayout.getParent().getParent().getParent()).getScrollY();
+        // 当前选中的 TransitionLayout 所在模型的 Top
+        final int currTranTop = ((FrameLayout)transitionLayout.getParent()).getTop();
 
+        // 将选中 TransitionLayout 从其所在模型中移除并放置在 ThumbnailMenu 相对模型所在同一个位置上
         final FrameLayout.LayoutParams frameParams = new FrameLayout.LayoutParams(
                 transitionLayout.getWidth(),
                 transitionLayout.getHeight());
-        frameParams.topMargin = top;
+
+        frameParams.topMargin = currTranTop - scrollDistance;
         transitionLayout.setLayoutParams(frameParams);
-        containner.removeView(transitionLayout);
+        final int choosenMenuIndex = tranLayoutList.indexOf(transitionLayout);
+        FrameLayout frameLayout = (FrameLayout) container.getChildAt(choosenMenuIndex);
+        frameLayout.removeView(transitionLayout);
         menu.addView(transitionLayout);
 
-
         float endTranX = (tmLayout.getWidth() - transitionLayout.getWidth()) * .5f;
-        float endTranY = -(transitionLayout.getTop() - (tmLayout.getHeight() - transitionLayout.getHeight()) * .5f) + scrollDistance;
+        float endTranY = (tmLayout.getHeight() - transitionLayout.getHeight()) * .5f - currTranTop + scrollDistance;
 
         ObjectAnimator scaleXAnima = ObjectAnimator.ofFloat(
                 transitionLayout, "scaleX", transitionLayout.getScaleX(), transitionLayout.getScaleX() / ThumbnailMenu.scaleRatio);
@@ -136,7 +143,7 @@ public class ThumbnailAnimator {
                 transitionLayout, "translationY", transitionLayout.getTranslationY(), endTranY);
 
         AnimatorSet animSet = new AnimatorSet();
-        animSet.setDuration(600);
+        animSet.setDuration(300);
         animSet.play(tranXAnima).with(tranYAnima).with(scaleXAnima).with(scaleYAnima);
         animSet.setInterpolator(interpolator);
         animSet.start();
@@ -144,23 +151,36 @@ public class ThumbnailAnimator {
         animSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                int index = tranLayoutList.indexOf(transitionLayout);
+                frameParams.topMargin = 0;
+
+                // 1. 还原选中的 TransitionLayout
+                transitionLayout.setTranslationX(0);
+                transitionLayout.setTranslationY(0);
+                transitionLayout.setLayoutParams(frameParams);
+
+                // 2. 移除菜单容器中模型中的 TransitionLayout
+                int modleCount = container.getChildCount();
+                FrameLayout modleLayout;
+                for (int i = 0; i < modleCount; i++) {
+                    modleLayout = (FrameLayout) container.getChildAt(i);
+                    modleLayout.removeAllViews();
+                }
+
+                // 3. 还原其他的 TransitionLayout
                 TransitionLayout tranLayout;
-                containner.removeAllViews();
+                // 获取当前选中的 TransitionLayout 在 ThumbnailMenu 布局层次的下标位置
                 int tempIndex = menu.indexOfChild(transitionLayout);
+                frameParams.topMargin = 0;
                 for (int i = tranLayoutList.size() - 1; i >= 0; i--) {
                     tranLayout = tranLayoutList.get(i);
-                    if (i != index) {
+                    if (i != choosenMenuIndex) {
                         tranLayout.setScaleX(1.0f);
                         tranLayout.setScaleY(1.0f);
                         tranLayout.setTranslationX(0);
                         tranLayout.setTranslationY(0);
-                        tranLayout.setLayoutParams(frameParams);
-                        menu.addView(tranLayout, tempIndex++);
+                        menu.addView(tranLayout, tempIndex++, frameParams);
                     }
                 }
-
-
             }
         });
 
