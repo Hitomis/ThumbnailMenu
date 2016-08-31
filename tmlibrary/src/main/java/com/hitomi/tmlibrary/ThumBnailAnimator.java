@@ -5,7 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.view.animation.Interpolator;
-import android.view.animation.LinearInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class ThumbnailAnimator {
 
-    private final Interpolator interpolator = new LinearInterpolator();
+    private final Interpolator interpolator = new OvershootInterpolator();
 
     /**
      * 菜单方向
@@ -32,6 +32,8 @@ public class ThumbnailAnimator {
      * Fragment 容器布局集合
      */
     private List<TransitionLayout> tranLayoutList;
+
+    private boolean init = true;
 
     public ThumbnailAnimator(int direction, ThumbnailLayout tmLayout, List<TransitionLayout> tranLayoutList) {
         this.direction = direction;
@@ -55,30 +57,107 @@ public class ThumbnailAnimator {
         }
     }
 
+//    private List<TransitionLayout> sonicSortTranLayout(int curShowIndex) {
+//        List<TransitionLayout> sortedTranLayoutList = new ArrayList<>();
+//        final int minIndex = 0, maxIndex = tranLayoutList.size() - 1;
+//
+//        int maxInterval = curShowIndex - minIndex > maxIndex - curShowIndex ?
+//                curShowIndex - minIndex : maxIndex - curShowIndex;
+//
+//        int backIndex, forwardIndex;
+//        sortedTranLayoutList.add(tranLayoutList.get(curShowIndex));
+//        for (int i = 1 ; i <= maxInterval ; i++) {
+//            backIndex = curShowIndex - i;
+//            forwardIndex = curShowIndex + i;
+//            if (backIndex >= minIndex) {
+//                sortedTranLayoutList.add(tranLayoutList.get(backIndex));
+//            }
+//            if (forwardIndex <= maxIndex) {
+//                sortedTranLayoutList.add(tranLayoutList.get(forwardIndex));
+//            }
+//        }
+//        return sortedTranLayoutList;
+//    }
+
     private void openLeftMenu() {
         final ThumbnailMenu menu = (ThumbnailMenu) tmLayout.getParent();
         final ThumbnailContainer containner = tmLayout.getContainner();
+
+//        TransitionLayout showingTranLayout = (TransitionLayout) menu.getChildAt(menu.getChildCount() - 1);
+//        int showingIndex = tranLayoutList.indexOf(showingTranLayout);
+//        List<TransitionLayout> sonicSortTranLayoutList = sonicSortTranLayout(showingIndex);
 
         // 当前 ScrollView 滚动的距离
         final int scrollDistance = ((ScrollView) containner.getParent()).getScrollY();
 
         float endTranX, endTranY;
-        for (int i = 0; i < tranLayoutList.size(); i++) {
-            final TransitionLayout transitionLayout = tranLayoutList.get(i);
-            final float tmpTranY = transitionLayout.getHeight() * (1.f - ThumbnailMenu.scaleRatio) * .5f;
+//        int delay;
 
-            endTranX = transitionLayout.getWidth() * (1.f - ThumbnailMenu.scaleRatio) * .5f;
-            endTranY = -tmpTranY + (i * transitionLayout.getHeight() * ThumbnailMenu.scaleRatio) - scrollDistance;
+        if (init) {
+            for (int i = 0; i < tranLayoutList.size(); i++) {
+                final TransitionLayout transitionLayout = tranLayoutList.get(i);
+                final float tmpTranY = transitionLayout.getHeight() * (1.f - ThumbnailMenu.scaleRatio) * .5f;
+
+                endTranX = transitionLayout.getWidth() * (1.f - ThumbnailMenu.scaleRatio) * .5f;
+                endTranY = -tmpTranY + (i * transitionLayout.getHeight() * ThumbnailMenu.scaleRatio) - scrollDistance;
+
+                ObjectAnimator scaleXAnima = ObjectAnimator.ofFloat(
+                        transitionLayout, "scaleX", transitionLayout.getScaleX(), ThumbnailMenu.scaleRatio);
+                ObjectAnimator scaleYAnima = ObjectAnimator.ofFloat(
+                        transitionLayout, "scaleY", transitionLayout.getScaleY(), ThumbnailMenu.scaleRatio);
+
+                ObjectAnimator tranXAnima = ObjectAnimator.ofFloat(
+                        transitionLayout, "translationX", transitionLayout.getTranslationX(), -endTranX);
+                ObjectAnimator tranYAnima = ObjectAnimator.ofFloat(
+                        transitionLayout, "translationY", transitionLayout.getTranslationY(), endTranY);
+
+                AnimatorSet animSet = new AnimatorSet();
+                animSet.setDuration(300);
+                animSet.play(scaleXAnima).with(scaleYAnima).with(tranXAnima).with(tranYAnima);
+                animSet.setInterpolator(interpolator);
+//            delay = (sonicSortTranLayoutList.size() - 1 - sonicSortTranLayoutList.indexOf(transitionLayout)) * 200;
+//            animSet.setStartDelay(delay);
+                animSet.start();
+
+                final int index = i;
+                final float finalEndTranX = endTranX;
+                animSet.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        menu.removeViewAt(menu.indexOfChild(transitionLayout));
+
+                        // 设置为原来的宽高大小，是因为之前缩小过
+                        FrameLayout.LayoutParams frameParams = new FrameLayout.LayoutParams(
+                                transitionLayout.getWidth(),
+                                transitionLayout.getHeight()
+                        );
+
+                        FrameLayout frameLayout = (FrameLayout) containner.getChildAt(index);
+                        transitionLayout.setTranslationX(-finalEndTranX);
+                        transitionLayout.setTranslationY(-tmpTranY);
+                        frameLayout.addView(transitionLayout, frameParams);
+                    }
+                });
+            }
+            init = false;
+        } else {
+            final TransitionLayout showingTranLayout = (TransitionLayout) menu.getChildAt(menu.getChildCount() - 1);
+            final int menuIndex = tranLayoutList.indexOf(showingTranLayout);
+            final float tmpTranY = showingTranLayout.getHeight() * (1.f - ThumbnailMenu.scaleRatio) * .5f;
+
+
+            endTranX = showingTranLayout.getWidth() * (1.f - ThumbnailMenu.scaleRatio) * .5f;
+            endTranY = -tmpTranY + (menuIndex * showingTranLayout.getHeight() * ThumbnailMenu.scaleRatio) - scrollDistance;
 
             ObjectAnimator scaleXAnima = ObjectAnimator.ofFloat(
-                    transitionLayout, "scaleX", transitionLayout.getScaleX(), ThumbnailMenu.scaleRatio);
+                    showingTranLayout, "scaleX", showingTranLayout.getScaleX(), ThumbnailMenu.scaleRatio);
             ObjectAnimator scaleYAnima = ObjectAnimator.ofFloat(
-                    transitionLayout, "scaleY", transitionLayout.getScaleY(), ThumbnailMenu.scaleRatio);
+                    showingTranLayout, "scaleY", showingTranLayout.getScaleY(), ThumbnailMenu.scaleRatio);
 
             ObjectAnimator tranXAnima = ObjectAnimator.ofFloat(
-                    transitionLayout, "translationX", transitionLayout.getTranslationX(), -endTranX);
+                    showingTranLayout, "translationX", showingTranLayout.getTranslationX(), -endTranX);
             ObjectAnimator tranYAnima = ObjectAnimator.ofFloat(
-                    transitionLayout, "translationY", transitionLayout.getTranslationY(), endTranY);
+                    showingTranLayout, "translationY", showingTranLayout.getTranslationY(), endTranY);
 
             AnimatorSet animSet = new AnimatorSet();
             animSet.setDuration(300);
@@ -86,26 +165,27 @@ public class ThumbnailAnimator {
             animSet.setInterpolator(interpolator);
             animSet.start();
 
-            final int index = i;
             final float finalEndTranX = endTranX;
             animSet.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    menu.removeViewAt(menu.indexOfChild(transitionLayout));
+                    menu.removeViewAt(menu.indexOfChild(showingTranLayout));
 
                     // 设置为原来的宽高大小，是因为之前缩小过
                     FrameLayout.LayoutParams frameParams = new FrameLayout.LayoutParams(
-                            transitionLayout.getWidth(),
-                            transitionLayout.getHeight()
+                            showingTranLayout.getWidth(),
+                            showingTranLayout.getHeight()
                     );
 
-                    FrameLayout frameLayout = (FrameLayout) containner.getChildAt(index);
-                    transitionLayout.setTranslationX(-finalEndTranX);
-                    transitionLayout.setTranslationY(-tmpTranY);
-                    frameLayout.addView(transitionLayout, frameParams);
+
+                    FrameLayout frameLayout = (FrameLayout) containner.getChildAt(menuIndex);
+                    showingTranLayout.setTranslationX(-finalEndTranX);
+                    showingTranLayout.setTranslationY(-tmpTranY);
+                    frameLayout.addView(showingTranLayout, frameParams);
                 }
             });
         }
+
     }
 
     private void closeLeftMenu(final TransitionLayout transitionLayout) {
@@ -144,7 +224,7 @@ public class ThumbnailAnimator {
 
         AnimatorSet animSet = new AnimatorSet();
         animSet.setDuration(300);
-        animSet.play(tranXAnima).with(tranYAnima).with(scaleXAnima).with(scaleYAnima);
+        animSet.play(tranXAnima).with(tranYAnima).before(scaleXAnima).before(scaleYAnima);
         animSet.setInterpolator(interpolator);
         animSet.start();
 
@@ -158,29 +238,29 @@ public class ThumbnailAnimator {
                 transitionLayout.setTranslationY(0);
                 transitionLayout.setLayoutParams(frameParams);
 
-                // 2. 移除菜单容器中模型中的 TransitionLayout
-                int modleCount = container.getChildCount();
-                FrameLayout modleLayout;
-                for (int i = 0; i < modleCount; i++) {
-                    modleLayout = (FrameLayout) container.getChildAt(i);
-                    modleLayout.removeAllViews();
-                }
-
-                // 3. 还原其他的 TransitionLayout
-                TransitionLayout tranLayout;
-                // 获取当前选中的 TransitionLayout 在 ThumbnailMenu 布局层次的下标位置
-                int tempIndex = menu.indexOfChild(transitionLayout);
-                frameParams.topMargin = 0;
-                for (int i = tranLayoutList.size() - 1; i >= 0; i--) {
-                    tranLayout = tranLayoutList.get(i);
-                    if (i != choosenMenuIndex) {
-                        tranLayout.setScaleX(1.0f);
-                        tranLayout.setScaleY(1.0f);
-                        tranLayout.setTranslationX(0);
-                        tranLayout.setTranslationY(0);
-                        menu.addView(tranLayout, tempIndex++, frameParams);
-                    }
-                }
+//                // 2. 移除菜单容器中模型中的 TransitionLayout
+//                int modleCount = container.getChildCount();
+//                FrameLayout modleLayout;
+//                for (int i = 0; i < modleCount; i++) {
+//                    modleLayout = (FrameLayout) container.getChildAt(i);
+//                    modleLayout.removeAllViews();
+//                }
+//
+//                // 3. 还原其他的 TransitionLayout
+//                TransitionLayout tranLayout;
+//                // 获取当前选中的 TransitionLayout 在 ThumbnailMenu 布局层次的下标位置
+//                int tempIndex = menu.indexOfChild(transitionLayout);
+//                frameParams.topMargin = 0;
+//                for (int i = tranLayoutList.size() - 1; i >= 0; i--) {
+//                    tranLayout = tranLayoutList.get(i);
+//                    if (i != choosenMenuIndex) {
+//                        tranLayout.setScaleX(1.0f);
+//                        tranLayout.setScaleY(1.0f);
+//                        tranLayout.setTranslationX(0);
+//                        tranLayout.setTranslationY(0);
+//                        menu.addView(tranLayout, tempIndex++, frameParams);
+//                    }
+//                }
             }
         });
 
