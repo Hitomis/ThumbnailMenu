@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.support.annotation.NonNull;
+import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
@@ -20,26 +21,40 @@ public class ThumbnailAnimator {
     private final Interpolator interpolator = new OvershootInterpolator();
 
     /**
-     * 菜单方向
-     */
-    private int direction;
-
-    /**
      * 缩略图容器布局
      */
-    private ThumbnailLayout tmLayout;
+    private ViewGroup backgroundLayout;
+
+    /**
+     * 缩略图菜单
+     */
+    private ThumbnailMenu menu;
+
+    /**
+     * 用于放置缩略图菜单的容器
+     */
+    private ThumbnailContainer container;
 
     /**
      * Fragment 容器布局集合
      */
     private List<TransitionLayout> tranLayoutList;
 
+    /**
+     * 菜单方向
+     */
+    private int direction;
+
     private boolean init = true;
 
-    public ThumbnailAnimator(int direction, ThumbnailLayout tmLayout, List<TransitionLayout> tranLayoutList) {
+    public ThumbnailAnimator(int direction, ViewGroup backgroundLayout, List<TransitionLayout> tranLayoutList) {
         this.direction = direction;
-        this.tmLayout = tmLayout;
+        this.backgroundLayout = backgroundLayout;
         this.tranLayoutList = tranLayoutList;
+
+        // 通过 backgroundLayout 获取父容器 ThumbnailMenu，与子容器 （ScrollView / HorizontalScrollView） 中的唯一 ViewGroup
+        menu = (ThumbnailMenu) backgroundLayout.getParent();
+        container = (ThumbnailContainer) ((FrameLayout)backgroundLayout.getChildAt(0)).getChildAt(0);
     }
 
     public void openMenuAnimator() {
@@ -76,16 +91,15 @@ public class ThumbnailAnimator {
             }
             init = false;
         } else {
-            ThumbnailMenu menu = (ThumbnailMenu) tmLayout.getParent();
             TransitionLayout showingTranLayout = (TransitionLayout) menu.getChildAt(menu.getChildCount() - 1);
 
             float singleThumMenuHeight = showingTranLayout.getHeight() * ThumbnailMenu.SCALE_RATIO;
             int menuIndex = tranLayoutList.indexOf(showingTranLayout);
 
             // 调整菜单滚动的位置
-            int adjustScrollLength = (int) (menuIndex * (singleThumMenuHeight + ThumbnailMenu.THUM_TOP_MARGIN));
-            ScrollView scrollView = (ScrollView) tmLayout.getContainner().getParent();
-            scrollView.scrollTo(0, adjustScrollLength);
+            int adjustScrollPosition = (int) (menuIndex * (singleThumMenuHeight + ThumbnailMenu.THUM_TOP_MARGIN));
+            ScrollView scrollView = (ScrollView) backgroundLayout.getChildAt(0);
+            scrollView.scrollTo(0, adjustScrollPosition);
 
             // 当前 ScrollView 滚动的距离
             int scrollDistance = scrollView.getScrollY();
@@ -105,9 +119,6 @@ public class ThumbnailAnimator {
      * @param transitionLayout
      */
     private void closeLeftMenu(final TransitionLayout transitionLayout) {
-        final ThumbnailMenu menu = (ThumbnailMenu) tmLayout.getParent();
-        final ThumbnailContainer container = tmLayout.getContainner();
-
         // 当前 ScrollView 滚动的距离
         final int scrollDistance = ((ScrollView) container.getParent()).getScrollY();
         // 当前选中的 TransitionLayout 所在模型的 Top
@@ -125,8 +136,8 @@ public class ThumbnailAnimator {
         frameLayout.removeView(transitionLayout);
         menu.addView(transitionLayout);
 
-        float endTranX = (tmLayout.getWidth() - transitionLayout.getWidth()) * .5f;
-        float endTranY = (tmLayout.getHeight() - transitionLayout.getHeight()) * .5f - currTranTop + scrollDistance;
+        float endTranX = (backgroundLayout.getWidth() - transitionLayout.getWidth()) * .5f;
+        float endTranY = (backgroundLayout.getHeight() - transitionLayout.getHeight()) * .5f - currTranTop + scrollDistance;
 
         AnimatorSet animSet = makeCloseMenuAnimatorSet(transitionLayout, endTranX, endTranY);
         animSet.addListener(new AnimatorListenerAdapter() {
@@ -206,8 +217,6 @@ public class ThumbnailAnimator {
      */
     private void addOpenMenuAnimatorSetListener(AnimatorSet animSet, final TransitionLayout transitionLayout,
                                                 final float tmpTranY, final int index, final float finalEndTranX) {
-        final ThumbnailMenu menu = (ThumbnailMenu) tmLayout.getParent();
-        final ThumbnailContainer container = tmLayout.getContainner();
         animSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {

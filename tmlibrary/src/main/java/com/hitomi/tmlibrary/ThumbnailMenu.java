@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +24,18 @@ public class ThumbnailMenu extends FrameLayout{
 
     static final int THUM_TOP_MARGIN = 2;
 
-    private PagerAdapter mAdapter;
-
-    private ThumbnailLayout thumbnailLayout;
+    private ThumbnailFactory factory;
 
     private ThumbnailAnimator thumbnailAnimator;
 
     private ThumbnailMenuChooser thumbnailMenuChooser;
+
+    private FrameLayout thumScrollLayout;
+
+    private RelativeLayout backgroundLayout;
+
+    private PagerAdapter pageAdapter;
+
 
     private List objects;
 
@@ -37,10 +43,17 @@ public class ThumbnailMenu extends FrameLayout{
 
     private int direction = ThumbnailFactory.MENU_DIRECTION_LEFT;
 
+    private boolean init = true;
+
     /**
      * 菜单是否打开
      */
     private boolean isOpen;
+
+    /**
+     * 页面数量
+     */
+    private int pageCount;
 
     public ThumbnailMenu(Context context) {
         this(context, null);
@@ -56,34 +69,51 @@ public class ThumbnailMenu extends FrameLayout{
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ThumbnailMenu);
         direction = typedArray.getInt(R.styleable.ThumbnailMenu_menu_direction, direction);
         typedArray.recycle();
-        init(attrs);
+
+        init();
     }
 
-    private void init(AttributeSet attrs) {
-        thumbnailMenuChooser = new ThumbnailMenuChooser();
-
+    private void init() {
         isOpen = false;
         objects = new ArrayList();
         tranLayoutList = new ArrayList<>();
-        thumbnailLayout = new ThumbnailLayout(getContext(), attrs);
-        thumbnailAnimator = new ThumbnailAnimator(direction, thumbnailLayout, tranLayoutList);
-        addView(thumbnailLayout);
+
+        thumbnailMenuChooser = new ThumbnailMenuChooser();
+        factory = new ThumbnailFactory();
     }
 
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (init) {
+            backgroundLayout = (RelativeLayout) getChildAt(0);
+            thumScrollLayout = factory.createMenuContainer(getContext(), direction);
+            backgroundLayout.addView(thumScrollLayout);
+
+            thumbnailAnimator = new ThumbnailAnimator(direction, backgroundLayout, tranLayoutList);
+            buildingModels();
+            init = false;
+        }
+    }
+
+    /**
+     * 绑定页面适配器
+     * @param adapter
+     */
     public void setAdapter(PagerAdapter adapter) {
-        if (mAdapter != null) {
-            mAdapter.startUpdate(this);
+        if (pageAdapter != null) {
+            pageAdapter.startUpdate(this);
             for (int i = 0; i < adapter.getCount(); i++) {
-                mAdapter.destroyItem((ViewGroup) getChildAt(i + 1), i, objects.get(i));
+                pageAdapter.destroyItem((ViewGroup) getChildAt(i + 1), i, objects.get(i));
             }
-            mAdapter.finishUpdate(this);
+            pageAdapter.finishUpdate(this);
         }
 
-        this.mAdapter = adapter;
-        int count = mAdapter.getCount();
+        pageAdapter = adapter;
+        pageCount = pageAdapter.getCount();
 
         LayoutParams layoutParams = new LayoutParams(MATCH_PARENT, MATCH_PARENT);
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i < pageCount; i++) {
             TransitionLayout frameLayout = new TransitionLayout(getContext());
             frameLayout.setId(i + 1);// id 不能为0
             frameLayout.setLayoutParams(layoutParams);
@@ -92,12 +122,35 @@ public class ThumbnailMenu extends FrameLayout{
             tranLayoutList.add(0, frameLayout); // 倒序添加
         }
 
-        for (int i = 0; i < count; i++) {
-            Object object = mAdapter.instantiateItem((ViewGroup) getChildAt(i + 1), i);
+        for (int i = 0; i < pageCount; i++) {
+            Object object = pageAdapter.instantiateItem((ViewGroup) getChildAt(i + 1), i);
             objects.add(object);
         }
-        mAdapter.finishUpdate(this);
-        thumbnailLayout.buildingModels(count);
+        pageAdapter.finishUpdate(this);
+    }
+
+    /**
+     * 获取缩略图菜单容器中的 ScrollView 中唯一 ViewGroup [这里是LinearLayout]
+     * @return
+     */
+    public ThumbnailContainer getThumContainner() {
+        return (ThumbnailContainer) thumScrollLayout.getChildAt(0);
+    }
+
+    /**
+     * 创建 modelCount 数量的缩略图模型添加到缩略图菜单容器中
+     */
+    private void buildingModels() {
+        final ThumbnailContainer containerLayout = getThumContainner();
+        containerLayout.removeAllViews();
+        for (int i = 0; i < pageCount; i++) {
+            ThumbnailContainer.LayoutParams containerLayoutParams = new ThumbnailContainer.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, (int) (getHeight() * ThumbnailMenu.SCALE_RATIO));
+            if (i != 0) containerLayoutParams.topMargin = ThumbnailMenu.THUM_TOP_MARGIN;
+            FrameLayout modelLayout = new FrameLayout(getContext());
+            modelLayout.setTag(i);
+            containerLayout.addView(modelLayout, containerLayoutParams);
+        }
     }
 
     private class ThumbnailMenuChooser implements OnClickListener {
