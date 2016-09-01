@@ -22,7 +22,7 @@ public class ThumbnailMenu extends FrameLayout{
 
     static final float SCALE_RATIO = .618f;
 
-    static final int THUM_TOP_MARGIN = 2;
+    static final int THUM_MARGIN = 2;
 
     private ThumbnailFactory factory;
 
@@ -87,11 +87,12 @@ public class ThumbnailMenu extends FrameLayout{
         super.onLayout(changed, left, top, right, bottom);
         if (init) {
             backgroundLayout = (RelativeLayout) getChildAt(0);
-            thumScrollLayout = factory.createMenuContainer(getContext(), direction);
+            thumScrollLayout = factory.createMenuContainer(getContext(), right, bottom, direction);
             backgroundLayout.addView(thumScrollLayout);
 
             thumbnailAnimator = new ThumbnailAnimator(direction, backgroundLayout, tranLayoutList);
             buildingModels();
+
             init = false;
         }
     }
@@ -145,8 +146,16 @@ public class ThumbnailMenu extends FrameLayout{
         containerLayout.removeAllViews();
         for (int i = 0; i < pageCount; i++) {
             ThumbnailContainer.LayoutParams containerLayoutParams = new ThumbnailContainer.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, (int) (getHeight() * ThumbnailMenu.SCALE_RATIO));
-            if (i != 0) containerLayoutParams.topMargin = ThumbnailMenu.THUM_TOP_MARGIN;
+                    (int) (getWidth() * SCALE_RATIO), (int) (getHeight() * SCALE_RATIO));
+
+            if (i != 0) {
+                if (direction == ThumbnailFactory.MENU_DIRECTION_BOTTOM) {
+                    containerLayoutParams.leftMargin = THUM_MARGIN;
+                } else {
+                    containerLayoutParams.topMargin = THUM_MARGIN;
+                }
+            }
+
             FrameLayout modelLayout = new FrameLayout(getContext());
             modelLayout.setTag(i);
             containerLayout.addView(modelLayout, containerLayoutParams);

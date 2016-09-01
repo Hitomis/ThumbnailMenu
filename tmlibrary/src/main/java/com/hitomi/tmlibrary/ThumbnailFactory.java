@@ -7,8 +7,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
-import com.hitomi.tmlibrary.util.DensityUtil;
-
 /**
  * Created by hitomi on 2016/8/19.
  */
@@ -20,12 +18,12 @@ class ThumbnailFactory {
 
     static final int MENU_DIRECTION_RIGHT = 1002;
 
-    FrameLayout createMenuContainer(Context context, int direction) {
+    FrameLayout createMenuContainer(Context context, int width, int height, int direction) {
         FrameLayout scrollLayout;
         RelativeLayout.LayoutParams rlayoutParams;
 
-        int scrollWidth = (int) (DensityUtil.getScreenWidth(context) * ThumbnailMenu.SCALE_RATIO);
-        int scrollHeight = (int) (DensityUtil.getScreenHeight(context) * (1.0f - ThumbnailMenu.SCALE_RATIO));
+        int scrollWidth = (int) (width * ThumbnailMenu.SCALE_RATIO);
+        int scrollHeight = (int) (height * ThumbnailMenu.SCALE_RATIO);
 
         LinearLayout containerLayout = new ThumbnailContainer(context, direction);
         ScrollView.LayoutParams leftLinlayParams = new ScrollView.LayoutParams(
