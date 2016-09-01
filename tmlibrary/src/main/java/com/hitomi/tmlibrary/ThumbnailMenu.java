@@ -20,7 +20,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
  */
 public class ThumbnailMenu extends FrameLayout{
 
-    static final float SCALE_RATIO = .618f;
+    static final float SCALE_RATIO = .45f;
 
     static final int THUM_MARGIN = 2;
 
@@ -41,7 +41,7 @@ public class ThumbnailMenu extends FrameLayout{
 
     private List<TransitionLayout> tranLayoutList;
 
-    private int direction = ThumbnailFactory.MENU_DIRECTION_LEFT;
+    private int direction = ThumbnailFactory.MENU_DIRECTION_BOTTOM;
 
     private boolean init = true;
 
