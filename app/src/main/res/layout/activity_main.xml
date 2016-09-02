@@ -6,9 +6,10 @@
     android:layout_height="match_parent"
     tools:context="com.hitomi.thumbnailmenu.MainActivity">
 
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    </RelativeLayout>
+
+    </FrameLayout>
 
 </com.hitomi.tmlibrary.ThumbnailMenu>
