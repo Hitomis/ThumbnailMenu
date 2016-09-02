@@ -56,7 +56,8 @@ public class ThumbnailAnimator {
 
         // 通过 backgroundLayout 获取父容器 ThumbnailMenu，与子容器 （ScrollView / HorizontalScrollView） 中的唯一 ViewGroup
         menu = (ThumbnailMenu) backgroundLayout.getParent();
-        container = (ThumbnailContainer) ((FrameLayout) backgroundLayout.getChildAt(0)).getChildAt(0);
+        FrameLayout backLayout = (FrameLayout) backgroundLayout.findViewWithTag(ThumbnailMenu.TAG_SCROLL_LAYOUT);
+        container = (ThumbnailContainer) backLayout.getChildAt(0);
     }
 
     /**
@@ -78,6 +79,7 @@ public class ThumbnailAnimator {
 
     /**
      * 动画模式关闭菜单，并显示 transitionLayout
+     *
      * @param transitionLayout 选中页面所在的 TransitionLayout
      */
     public void closeMenuAnimator(TransitionLayout transitionLayout) {
@@ -118,7 +120,7 @@ public class ThumbnailAnimator {
 
             // 调整菜单滚动的位置
             int adjustScrollPosition = (int) (menuIndex * (singleThumMenuWidth + ThumbnailMenu.THUM_MARGIN));
-            HorizontalScrollView scrollView = (HorizontalScrollView) backgroundLayout.getChildAt(0);
+            HorizontalScrollView scrollView = (HorizontalScrollView) backgroundLayout.findViewWithTag(ThumbnailMenu.TAG_SCROLL_LAYOUT);
             scrollView.scrollTo(adjustScrollPosition, 0);
 
             // 当前 ScrollView 滚动的距离
@@ -145,17 +147,19 @@ public class ThumbnailAnimator {
         // 当前选中的 TransitionLayout 所在模型的 Left
         final int currTranLeft = ((FrameLayout) transitionLayout.getParent()).getLeft();
 
+        int tranTop = ((FrameLayout) transitionLayout.getParent()).getTop();
         // 将选中 TransitionLayout 从其所在模型中移除并放置在 ThumbnailMenu 相对模型所在同一个位置上
-        final FrameLayout.LayoutParams frameParams = new FrameLayout.LayoutParams(
-                transitionLayout.getWidth(),
-                transitionLayout.getHeight());
-
-        frameParams.leftMargin = currTranLeft - scrollDistance;
-        frameParams.topMargin = scrollView.getTop();
-        transitionLayout.setLayoutParams(frameParams);
         final int choosenMenuIndex = tranLayoutList.indexOf(transitionLayout);
         FrameLayout frameLayout = (FrameLayout) container.getChildAt(choosenMenuIndex);
         frameLayout.removeView(transitionLayout);
+
+        final FrameLayout.LayoutParams frameParams = new FrameLayout.LayoutParams(
+                transitionLayout.getWidth(),
+                transitionLayout.getHeight());
+        frameParams.leftMargin = currTranLeft - scrollDistance;
+        frameParams.topMargin = tranTop;
+        transitionLayout.setLayoutParams(frameParams);
+
         menu.addView(transitionLayout);
 
         float endTranX = (backgroundLayout.getWidth() - transitionLayout.getWidth()) * .5f - currTranLeft + scrollDistance;
@@ -200,7 +204,7 @@ public class ThumbnailAnimator {
 
             // 调整菜单滚动的位置
             int adjustScrollPosition = (int) (menuIndex * (singleThumMenuHeight + ThumbnailMenu.THUM_MARGIN));
-            ScrollView scrollView = (ScrollView) backgroundLayout.getChildAt(0);
+            ScrollView scrollView = (ScrollView) backgroundLayout.findViewWithTag(ThumbnailMenu.TAG_SCROLL_LAYOUT);
             scrollView.scrollTo(0, adjustScrollPosition);
 
             // 当前 ScrollView 滚动的距离
@@ -219,7 +223,7 @@ public class ThumbnailAnimator {
     /**
      * 横向(左侧或者右侧)关闭菜单，并显示选中的 TransitionLayout
      *
-     * @param transitionLayout  选中页面所在的TransitionLayout
+     * @param transitionLayout 选中页面所在的TransitionLayout
      */
     private void horizontalCloseMenu(final TransitionLayout transitionLayout) {
         // 当前 ScrollView 滚动的距离
@@ -228,15 +232,16 @@ public class ThumbnailAnimator {
         final int currTranTop = ((FrameLayout) transitionLayout.getParent()).getTop();
 
         // 将选中 TransitionLayout 从其所在模型中移除并放置在 ThumbnailMenu 相对模型所在同一个位置上
-        final FrameLayout.LayoutParams frameParams = new FrameLayout.LayoutParams(
-                transitionLayout.getWidth(),
-                transitionLayout.getHeight());
-
-        frameParams.topMargin = currTranTop - scrollDistance;
-        transitionLayout.setLayoutParams(frameParams);
         final int choosenMenuIndex = tranLayoutList.indexOf(transitionLayout);
         FrameLayout frameLayout = (FrameLayout) container.getChildAt(choosenMenuIndex);
         frameLayout.removeView(transitionLayout);
+
+        final FrameLayout.LayoutParams frameParams = new FrameLayout.LayoutParams(
+                transitionLayout.getWidth(),
+                transitionLayout.getHeight());
+        frameParams.topMargin = currTranTop - scrollDistance;
+        transitionLayout.setLayoutParams(frameParams);
+
         menu.addView(transitionLayout);
 
         float endTranX = (backgroundLayout.getWidth() - transitionLayout.getWidth()) * .5f;
@@ -246,6 +251,7 @@ public class ThumbnailAnimator {
         animSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                frameParams.leftMargin = 0;
                 frameParams.topMargin = 0;
                 // 还原选中的 TransitionLayout
                 transitionLayout.setTranslationX(0);
@@ -304,6 +310,7 @@ public class ThumbnailAnimator {
         float currTranX = direction == ThumbnailFactory.MENU_DIRECTION_RIGHT ?
                 -transitionLayout.getTranslationX() :
                 transitionLayout.getTranslationX();
+
         ObjectAnimator tranXAnima = ObjectAnimator.ofFloat(
                 transitionLayout, "translationX", currTranX, endTranX);
         ObjectAnimator tranYAnima = ObjectAnimator.ofFloat(
@@ -331,17 +338,20 @@ public class ThumbnailAnimator {
         animSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
+                // 1. 将 transitionLayout 从 menu 容器中移除
                 menu.removeViewAt(menu.indexOfChild(transitionLayout));
 
+                // 2. 将 transitionLayout 放入菜单容器中
                 // 设置为原来的宽高大小，是因为之前缩小过
                 FrameLayout.LayoutParams frameParams = new FrameLayout.LayoutParams(
                         transitionLayout.getWidth(),
                         transitionLayout.getHeight()
                 );
-
                 FrameLayout frameLayout = (FrameLayout) container.getChildAt(index);
+                // 调整位置
                 transitionLayout.setTranslationX(-finalEndTranX);
                 transitionLayout.setTranslationY(-tmpTranY);
+                // 将缩小后的 transitionLayout 放入模型中
                 frameLayout.addView(transitionLayout, frameParams);
             }
         });
