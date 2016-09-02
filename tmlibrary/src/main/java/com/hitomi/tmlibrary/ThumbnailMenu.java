@@ -7,7 +7,6 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +17,13 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
  * 缩略图菜单
  * Created by hitomi on 2016/8/19.
  */
-public class ThumbnailMenu extends FrameLayout{
+public class ThumbnailMenu extends FrameLayout {
 
     static final float SCALE_RATIO = .45f;
 
     static final int THUM_MARGIN = 2;
+
+    static final String TAG_SCROLL_LAYOUT = "tag_scroll_layout";
 
     private ThumbnailFactory factory;
 
@@ -32,16 +33,15 @@ public class ThumbnailMenu extends FrameLayout{
 
     private FrameLayout thumScrollLayout;
 
-    private RelativeLayout backgroundLayout;
+    private ViewGroup backgroundLayout;
 
     private PagerAdapter pageAdapter;
-
 
     private List objects;
 
     private List<TransitionLayout> tranLayoutList;
 
-    private int direction = ThumbnailFactory.MENU_DIRECTION_BOTTOM;
+    private int direction = ThumbnailFactory.MENU_DIRECTION_RIGHT;
 
     private boolean init = true;
 
@@ -86,8 +86,9 @@ public class ThumbnailMenu extends FrameLayout{
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         if (init) {
-            backgroundLayout = (RelativeLayout) getChildAt(0);
-            thumScrollLayout = factory.createMenuContainer(getContext(), right, bottom, direction);
+            backgroundLayout = (ViewGroup) getChildAt(0);
+            thumScrollLayout = factory.createMenuContainer(getContext(), direction);
+            thumScrollLayout.setTag(TAG_SCROLL_LAYOUT);
             backgroundLayout.addView(thumScrollLayout);
 
             thumbnailAnimator = new ThumbnailAnimator(direction, backgroundLayout, tranLayoutList);
@@ -99,6 +100,7 @@ public class ThumbnailMenu extends FrameLayout{
 
     /**
      * 绑定页面适配器
+     *
      * @param adapter
      */
     public void setAdapter(PagerAdapter adapter) {
@@ -132,6 +134,7 @@ public class ThumbnailMenu extends FrameLayout{
 
     /**
      * 获取缩略图菜单容器中的 ScrollView 中唯一 ViewGroup [这里是LinearLayout]
+     *
      * @return
      */
     public ThumbnailContainer getThumContainner() {
@@ -144,10 +147,10 @@ public class ThumbnailMenu extends FrameLayout{
     private void buildingModels() {
         final ThumbnailContainer containerLayout = getThumContainner();
         containerLayout.removeAllViews();
+
         for (int i = 0; i < pageCount; i++) {
             ThumbnailContainer.LayoutParams containerLayoutParams = new ThumbnailContainer.LayoutParams(
                     (int) (getWidth() * SCALE_RATIO), (int) (getHeight() * SCALE_RATIO));
-
             if (i != 0) {
                 if (direction == ThumbnailFactory.MENU_DIRECTION_BOTTOM) {
                     containerLayoutParams.leftMargin = THUM_MARGIN;
@@ -156,20 +159,16 @@ public class ThumbnailMenu extends FrameLayout{
                 }
             }
 
+            if (direction == ThumbnailFactory.MENU_DIRECTION_BOTTOM) {
+                containerLayoutParams.topMargin = getHeight() - containerLayoutParams.height;
+            }
+            if (direction == ThumbnailFactory.MENU_DIRECTION_RIGHT) {
+                containerLayoutParams.leftMargin = getWidth() - containerLayoutParams.width;
+            }
+
             FrameLayout modelLayout = new FrameLayout(getContext());
             modelLayout.setTag(i);
             containerLayout.addView(modelLayout, containerLayoutParams);
-        }
-    }
-
-    private class ThumbnailMenuChooser implements OnClickListener {
-
-        @Override
-        public void onClick(View view) {
-            if (isOpen && view instanceof TransitionLayout) {
-                TransitionLayout choosenLayout = (TransitionLayout) view;
-                closeMenu(choosenLayout);
-            }
         }
     }
 
@@ -181,5 +180,16 @@ public class ThumbnailMenu extends FrameLayout{
     private void closeMenu(TransitionLayout transitionLayout) {
         isOpen = false;
         thumbnailAnimator.closeMenuAnimator(transitionLayout);
+    }
+
+    private class ThumbnailMenuChooser implements OnClickListener {
+
+        @Override
+        public void onClick(View view) {
+            if (isOpen && view instanceof TransitionLayout) {
+                TransitionLayout choosenLayout = (TransitionLayout) view;
+                closeMenu(choosenLayout);
+            }
+        }
     }
 }
