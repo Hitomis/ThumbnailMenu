@@ -4,7 +4,7 @@
 
 # Preview
 
-<img src="preview/men_left.gif"/>
+<img src="preview/menu_left.gif"/>
 <img src="preview/menu_bottom.gif"/>
 <img src="preview/menu_right.gif"/>
 

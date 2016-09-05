@@ -6,11 +6,11 @@
     android:layout_height="match_parent"
     tools:context="com.hitomi.thumbnailmenu.MainActivity">
 
-    <com.hitomi.tmlibrary.ThumbnailMenu xmlns:tools="http://schemas.android.com/tools"
+    <com.hitomi.tmlibrary.ThumbnailMenu
         android:id="@+id/thumb"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:menu_direction="right">
+        app:menu_direction="bottom">
 
         <RelativeLayout
             android:layout_width="match_parent"
