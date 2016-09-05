@@ -10,6 +10,8 @@
 
 # Usage
 
+导入 tmlibrary module, 或者直接拷贝 com.hitomi.tmlibrary 包下所有 java 文件到您的项目中
+
 布局文件中：
 
     <com.hitomi.tmlibrary.ThumbnailMenu
