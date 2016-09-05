@@ -28,11 +28,13 @@ public class MainActivity extends AppCompatActivity {
         Fragment2 fragment2 = new Fragment2();
         Fragment3 fragment3 = new Fragment3();
         Fragment4 fragment4 = new Fragment4();
+        Fragment5 fragment5 = new Fragment5();
 
-        fragmentList.add(fragment1);
-        fragmentList.add(fragment2);
-        fragmentList.add(fragment3);
+        fragmentList.add(fragment5);
         fragmentList.add(fragment4);
+        fragmentList.add(fragment3);
+        fragmentList.add(fragment2);
+        fragmentList.add(fragment1);
 
         FragmentPagerAdapter adapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override

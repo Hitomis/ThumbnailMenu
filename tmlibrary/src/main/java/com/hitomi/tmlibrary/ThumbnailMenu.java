@@ -41,7 +41,7 @@ public class ThumbnailMenu extends FrameLayout {
 
     private List<TransitionLayout> tranLayoutList;
 
-    private int direction = ThumbnailFactory.MENU_DIRECTION_RIGHT;
+    private int direction = ThumbnailFactory.MENU_DIRECTION_BOTTOM;
 
     private boolean init = true;
 
@@ -171,6 +171,8 @@ public class ThumbnailMenu extends FrameLayout {
             containerLayout.addView(modelLayout, containerLayoutParams);
         }
     }
+
+
 
     public void openMenu() {
         isOpen = true;

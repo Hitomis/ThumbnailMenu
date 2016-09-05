@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/bg_fragment_4">
+    android:background="@mipmap/bg_fragment_5">
 
 
 </LinearLayout>

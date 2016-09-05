@@ -6,10 +6,12 @@
     android:layout_height="match_parent"
     tools:context="com.hitomi.thumbnailmenu.MainActivity">
 
-    <FrameLayout
+    <RelativeLayout
+        android:background="@mipmap/profile_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </FrameLayout>
+
+    </RelativeLayout>
 
 </com.hitomi.tmlibrary.ThumbnailMenu>
