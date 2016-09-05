@@ -33,8 +33,6 @@ public class ThumbnailMenu extends FrameLayout {
 
     private FrameLayout thumScrollLayout;
 
-    private ViewGroup backgroundLayout;
-
     private PagerAdapter pageAdapter;
 
     private List objects;
@@ -86,7 +84,6 @@ public class ThumbnailMenu extends FrameLayout {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         if (init) {
-            backgroundLayout = (ViewGroup) getChildAt(0);
             thumScrollLayout = factory.createMenuContainer(getContext(), direction);
             thumScrollLayout.setTag(TAG_SCROLL_LAYOUT);
             addView(thumScrollLayout);
@@ -172,16 +169,18 @@ public class ThumbnailMenu extends FrameLayout {
         }
     }
 
-
-
     public void openMenu() {
-        isOpen = true;
-        thumbnailAnimator.openMenuAnimator();
+        if (!isOpen) {
+            isOpen = true;
+            thumbnailAnimator.openMenuAnimator();
+        }
     }
 
     private void closeMenu(TransitionLayout transitionLayout) {
-        isOpen = false;
-        thumbnailAnimator.closeMenuAnimator(transitionLayout);
+        if (isOpen) {
+            isOpen = false;
+            thumbnailAnimator.closeMenuAnimator(transitionLayout);
+        }
     }
 
     private class ThumbnailMenuChooser implements OnClickListener {
