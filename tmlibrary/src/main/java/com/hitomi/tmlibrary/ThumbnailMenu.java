@@ -16,6 +16,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 /**
  * 缩略图菜单
  * Created by hitomi on 2016/8/19.
+ * email : 196425254@qq.com
  */
 public class ThumbnailMenu extends FrameLayout {
 
@@ -35,12 +36,20 @@ public class ThumbnailMenu extends FrameLayout {
 
     private PagerAdapter pageAdapter;
 
+    private OnThumbnailMenuCloseListener menuCloseListener;
+
     private List objects;
 
     private List<TransitionLayout> tranLayoutList;
 
+    /**
+     * 缩略图菜单位置方向
+     */
     private int direction = ThumbnailFactory.MENU_DIRECTION_BOTTOM;
 
+    /**
+     * 第一次初始化标记
+     */
     private boolean init = true;
 
     /**
@@ -179,8 +188,20 @@ public class ThumbnailMenu extends FrameLayout {
     private void closeMenu(TransitionLayout transitionLayout) {
         if (isOpen) {
             isOpen = false;
-            thumbnailAnimator.closeMenuAnimator(transitionLayout);
+            thumbnailAnimator.closeMenuAnimator(transitionLayout, menuCloseListener);
         }
+    }
+
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    public void setOnMenuCloseListener(OnThumbnailMenuCloseListener menuCloseListener){
+        this.menuCloseListener = menuCloseListener;
+    }
+
+    public interface OnThumbnailMenuCloseListener {
+        void onMenuCloseListener();
     }
 
     private class ThumbnailMenuChooser implements OnClickListener {

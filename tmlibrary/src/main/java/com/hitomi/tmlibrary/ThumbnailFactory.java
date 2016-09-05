@@ -7,7 +7,11 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 /**
+ * 依据方向创建不同位置的菜单容器 ScrollView / HorizontalScrollView <br/>
+ * 左侧和右侧为 ScrollView, 下侧为 HorizontalScrollView <br/>
+ *
  * Created by hitomi on 2016/8/19.
+ * email : 196425254@qq.com
  */
 class ThumbnailFactory {
 

@@ -4,7 +4,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.hitomi.tmlibrary.ThumbnailMenu;
 
@@ -15,15 +16,28 @@ public class MainActivity extends AppCompatActivity {
 
     private List<Fragment> fragmentList = new ArrayList<>();
 
-    private ThumbnailMenu thumbnailMenu;
+    private ThumbnailMenu thumMenu;
+
+    private ImageView ivMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        thumbnailMenu = (ThumbnailMenu) findViewById(R.id.thumb);
+        findViewById();
 
+        initFragment();
+
+        setViewListener();
+    }
+
+    private void findViewById() {
+        thumMenu = (ThumbnailMenu) findViewById(R.id.thumb);
+        ivMenu = (ImageView) findViewById(R.id.iv_menu);
+    }
+
+    private void initFragment() {
         Fragment1 fragment1 = new Fragment1();
         Fragment2 fragment2 = new Fragment2();
         Fragment3 fragment3 = new Fragment3();
@@ -48,12 +62,24 @@ public class MainActivity extends AppCompatActivity {
             }
 
         };
-        thumbnailMenu.setAdapter(adapter);
+        thumMenu.setAdapter(adapter);
     }
 
-    @Override
-    public boolean onMenuOpened(int featureId, Menu menu) {
-        thumbnailMenu.openMenu();
-        return super.onMenuOpened(featureId, menu);
+    private void setViewListener() {
+        ivMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ivMenu.setVisibility(View.GONE);
+                thumMenu.openMenu();
+            }
+        });
+
+        thumMenu.setOnMenuCloseListener(new ThumbnailMenu.OnThumbnailMenuCloseListener() {
+            @Override
+            public void onMenuCloseListener() {
+                ivMenu.setVisibility(View.VISIBLE);
+            }
+        });
     }
+
 }
