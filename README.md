@@ -11,7 +11,8 @@
 # Usage
 
 布局文件中：
-    <com.hitomi.tmlibrary.ThumbnailMenu xmlns:tools="http://schemas.android.com/tools"
+
+    <com.hitomi.tmlibrary.ThumbnailMenu
         android:id="@+id/thumb"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
