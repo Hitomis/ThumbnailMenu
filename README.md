@@ -11,20 +11,20 @@
 # Usage
 
 布局文件中：
-<com.hitomi.tmlibrary.ThumbnailMenu xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/thumb"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:menu_direction="right">
-
-    <RelativeLayout
+    <com.hitomi.tmlibrary.ThumbnailMenu xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/thumb"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@mipmap/profile_background">
-
-    </RelativeLayout>
-
-</com.hitomi.tmlibrary.ThumbnailMenu>
+        app:menu_direction="right">
+    
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@mipmap/profile_background">
+    
+        </RelativeLayout>
+    
+    </com.hitomi.tmlibrary.ThumbnailMenu>
 
 RelativeLayout 可以让您编写自己的背景布局
 
