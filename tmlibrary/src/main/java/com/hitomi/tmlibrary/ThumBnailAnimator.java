@@ -14,6 +14,7 @@ import android.widget.ScrollView;
 import java.util.List;
 
 /**
+ * 打开或关闭菜单动画实现类 <br/>
  * Created by hitomi on 2016/8/26.
  * email : 196425254@qq.com
  */
@@ -40,6 +41,11 @@ public class ThumbnailAnimator {
      * Fragment 容器布局集合
      */
     private List<TransitionLayout> tranLayoutList;
+
+    /**
+     *菜单关闭时的监听器
+     */
+    private ThumbnailMenu.OnThumbnailMenuCloseListener onMenuCloseListener;
 
     /**
      * 菜单方向
@@ -78,8 +84,11 @@ public class ThumbnailAnimator {
      * 动画模式关闭菜单，并显示 transitionLayout
      *
      * @param transitionLayout 选中页面所在的 TransitionLayout
+     * @param onMenuCloseListener
      */
-    public void closeMenuAnimator(TransitionLayout transitionLayout) {
+    public void closeMenuAnimator(TransitionLayout transitionLayout,
+                                  ThumbnailMenu.OnThumbnailMenuCloseListener onMenuCloseListener) {
+        this.onMenuCloseListener = onMenuCloseListener;
         switch (direction) {
             case ThumbnailFactory.MENU_DIRECTION_LEFT:
             case ThumbnailFactory.MENU_DIRECTION_RIGHT:
@@ -163,17 +172,7 @@ public class ThumbnailAnimator {
         float endTranY = -frameParams.topMargin;
 
         AnimatorSet animSet = makeCloseMenuAnimatorSet(transitionLayout, endTranX, endTranY);
-        animSet.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                frameParams.leftMargin = 0;
-                frameParams.topMargin = 0;
-                // 还原选中的 TransitionLayout
-                transitionLayout.setTranslationX(0);
-                transitionLayout.setTranslationY(0);
-                transitionLayout.setLayoutParams(frameParams);
-            }
-        });
+        addAniamEndListener(transitionLayout, frameParams, animSet);
     }
 
     /**
@@ -245,6 +244,14 @@ public class ThumbnailAnimator {
         float endTranY = (thumbnailMenu.getHeight() - transitionLayout.getHeight()) * .5f - currTranTop + scrollDistance;
 
         AnimatorSet animSet = makeCloseMenuAnimatorSet(transitionLayout, endTranX, endTranY);
+        addAniamEndListener(transitionLayout, frameParams, animSet);
+
+    }
+
+    private void addAniamEndListener(final TransitionLayout transitionLayout,
+                                     final FrameLayout.LayoutParams frameParams,
+                                     AnimatorSet animSet) {
+
         animSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -254,9 +261,12 @@ public class ThumbnailAnimator {
                 transitionLayout.setTranslationX(0);
                 transitionLayout.setTranslationY(0);
                 transitionLayout.setLayoutParams(frameParams);
+
+                if (onMenuCloseListener != null) {
+                    onMenuCloseListener.onMenuCloseListener();
+                }
             }
         });
-
     }
 
     /**
