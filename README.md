@@ -61,13 +61,24 @@ Activity 中：
 
 # Attributes
 
-    <declare-styleable name="ThumbnailMenu">
-        <attr name="menu_direction" format="enum">
-            <enum name="left" value="1000" /> // 缩略图置于屏幕左侧
-            <enum name="bottom" value="1001" /> // 缩略图置于屏幕底部
-            <enum name="right" value="1002" /> // 缩略图置于屏幕右侧
-        </attr>
-    </declare-styleable>
+    <attr name="menu_direction" format="enum">
+        <enum name="left" value="1000" />
+        <enum name="bottom" value="1001" />
+        <enum name="right" value="1002" />
+    </attr>
+
+    支持三种方向:
+        - left :缩略图置于屏幕左侧
+        - bottom : 缩略图置于屏幕底部
+        - right : 缩略图置于屏幕右侧
+
+     <br/>
+
+    <attr name="scale_ratio" format="float" />
+
+    支持缩略图大小自定义
+        - scale_ratio ：取值为 0.1f 到 1.0f 之间。
+
 
 #Licence
 

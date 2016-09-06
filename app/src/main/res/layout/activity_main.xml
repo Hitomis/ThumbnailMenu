@@ -10,7 +10,8 @@
         android:id="@+id/thumb"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:menu_direction="bottom">
+        app:menu_direction="bottom"
+        app:scale_ratio=".1">
 
         <RelativeLayout
             android:layout_width="match_parent"

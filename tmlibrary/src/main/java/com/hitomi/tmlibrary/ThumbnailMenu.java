@@ -48,6 +48,11 @@ public class ThumbnailMenu extends FrameLayout {
     private int direction = ThumbnailFactory.MENU_DIRECTION_BOTTOM;
 
     /**
+     * 缩略图当前缩放比率
+     */
+    private float scaleRation = SCALE_RATIO;
+
+    /**
      * 第一次初始化标记
      */
     private boolean init = true;
@@ -75,6 +80,9 @@ public class ThumbnailMenu extends FrameLayout {
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ThumbnailMenu);
         direction = typedArray.getInt(R.styleable.ThumbnailMenu_menu_direction, direction);
+        scaleRation = typedArray.getFloat(R.styleable.ThumbnailMenu_scale_ratio, scaleRation);
+        scaleRation = scaleRation >= 1.f ? 1.f : scaleRation;
+        scaleRation = scaleRation <= .1f ? .1f : scaleRation;
         typedArray.recycle();
 
         init();
@@ -156,7 +164,7 @@ public class ThumbnailMenu extends FrameLayout {
 
         for (int i = 0; i < pageCount; i++) {
             ThumbnailContainer.LayoutParams containerLayoutParams = new ThumbnailContainer.LayoutParams(
-                    (int) (getWidth() * SCALE_RATIO), (int) (getHeight() * SCALE_RATIO));
+                    (int) (getWidth() * scaleRation), (int) (getHeight() * scaleRation));
             if (i != 0) {
                 if (direction == ThumbnailFactory.MENU_DIRECTION_BOTTOM) {
                     containerLayoutParams.leftMargin = THUM_MARGIN;
@@ -178,6 +186,9 @@ public class ThumbnailMenu extends FrameLayout {
         }
     }
 
+    /**
+     * 打开菜单
+     */
     public void openMenu() {
         if (!isOpen) {
             isOpen = true;
@@ -185,6 +196,11 @@ public class ThumbnailMenu extends FrameLayout {
         }
     }
 
+    /**
+     * 关闭菜单
+     *
+     * @param transitionLayout
+     */
     private void closeMenu(TransitionLayout transitionLayout) {
         if (isOpen) {
             isOpen = false;
@@ -192,11 +208,25 @@ public class ThumbnailMenu extends FrameLayout {
         }
     }
 
+    /**
+     * 菜单是否打开
+     *
+     * @return
+     */
     public boolean isOpen() {
         return isOpen;
     }
 
-    public void setOnMenuCloseListener(OnThumbnailMenuCloseListener menuCloseListener){
+    /**
+     * 返回缩略图缩放的比率
+     *
+     * @return
+     */
+    public float getScaleRatio() {
+        return scaleRation;
+    }
+
+    public void setOnMenuCloseListener(OnThumbnailMenuCloseListener menuCloseListener) {
         this.menuCloseListener = menuCloseListener;
     }
 

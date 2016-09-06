@@ -8,6 +8,8 @@
             <enum name="bottom" value="1001" />
             <enum name="right" value="1002" />
         </attr>
+        
+        <attr name="scale_ratio" format="float" />
     </declare-styleable>
 
 </resources>
