@@ -5,7 +5,9 @@
 # Preview
 
 <img src="preview/menu_left.gif"/>
+<br/>
 <img src="preview/menu_bottom.gif"/>
+<br/>
 <img src="preview/menu_right.gif"/>
 
 # Usage
