@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.support.annotation.NonNull;
+import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
@@ -67,6 +68,7 @@ public class ThumbnailAnimator {
      * 动画模式打开菜单
      */
     public void openMenuAnimator() {
+        scrollLayout.setVisibility(View.VISIBLE);
         switch (direction) {
             case ThumbnailFactory.MENU_DIRECTION_LEFT:
             case ThumbnailFactory.MENU_DIRECTION_RIGHT:
@@ -172,7 +174,7 @@ public class ThumbnailAnimator {
         float endTranY = -frameParams.topMargin;
 
         AnimatorSet animSet = makeCloseMenuAnimatorSet(transitionLayout, endTranX, endTranY);
-        addAniamEndListener(transitionLayout, frameParams, animSet);
+        addCloseMenuAnimatorSetListener(transitionLayout, frameParams, animSet);
     }
 
     /**
@@ -244,13 +246,13 @@ public class ThumbnailAnimator {
         float endTranY = (thumbnailMenu.getHeight() - transitionLayout.getHeight()) * .5f - currTranTop + scrollDistance;
 
         AnimatorSet animSet = makeCloseMenuAnimatorSet(transitionLayout, endTranX, endTranY);
-        addAniamEndListener(transitionLayout, frameParams, animSet);
+        addCloseMenuAnimatorSetListener(transitionLayout, frameParams, animSet);
 
     }
 
-    private void addAniamEndListener(final TransitionLayout transitionLayout,
-                                     final FrameLayout.LayoutParams frameParams,
-                                     AnimatorSet animSet) {
+    private void addCloseMenuAnimatorSetListener(final TransitionLayout transitionLayout,
+                                                 final FrameLayout.LayoutParams frameParams,
+                                                 AnimatorSet animSet) {
 
         animSet.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -265,6 +267,7 @@ public class ThumbnailAnimator {
                 if (onMenuCloseListener != null) {
                     onMenuCloseListener.onMenuCloseListener();
                 }
+                scrollLayout.setVisibility(View.GONE);
             }
         });
     }

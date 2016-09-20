@@ -103,6 +103,7 @@ public class ThumbnailMenu extends FrameLayout {
         if (init) {
             thumScrollLayout = factory.createMenuContainer(getContext(), direction);
             thumScrollLayout.setTag(TAG_SCROLL_LAYOUT);
+            thumScrollLayout.setVisibility(View.GONE);
             addView(thumScrollLayout);
 
             thumbnailAnimator = new ThumbnailAnimator(direction, this, tranLayoutList);
