@@ -1,5 +1,7 @@
 # ThumbnailMenu
 
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-ThumbnailMenu-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/4297)
+
 这是一个简单而精致的 Fragment 菜单控件，它可以让你切换 Fragment 的时候不再单调、死板。
 
 # Preview
