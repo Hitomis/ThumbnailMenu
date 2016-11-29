@@ -10,16 +10,9 @@
         android:id="@+id/thumb"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@mipmap/profile_background"
         app:menu_direction="bottom"
         app:scale_ratio=".38">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@mipmap/profile_background">
-
-        </RelativeLayout>
-
     </com.hitomi.tmlibrary.ThumbnailMenu>
 
     <ImageView

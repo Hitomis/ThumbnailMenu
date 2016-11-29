@@ -1,8 +1,10 @@
+/*
+ * Copyright (C) 2016 Baidu, Inc. All Rights Reserved.
+ */
 package com.hitomi.tmlibrary;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.FrameLayout;
 
 /**
@@ -10,8 +12,6 @@ import android.widget.FrameLayout;
  * Created by hitomi on 2016/8/22.
  */
 public class TransitionLayout extends FrameLayout {
-
-    private final View view;
 
     public TransitionLayout(Context context) {
         this(context, null);
@@ -23,8 +23,6 @@ public class TransitionLayout extends FrameLayout {
 
     public TransitionLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
-        view = getChildAt(0);
     }
 
 }
